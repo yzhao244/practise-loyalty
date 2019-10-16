@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<head>
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+</head>
+
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+<body ng-app="myApp" ng-controller="myCtrl">
+<h1>{{header}}</h1>
+
+Type your message here: <input type="text" name="message" value="" ng-model="content"><br>
+<input type="submit" value="Submit" ng-click="createMessage()">
+
+<table>
+<tr ng-repeat="message in messages">
+	<td>{{message.content}}</td>
+</tr>
+
+</table>
+<script>
+var app = angular.module("myApp", []);
+app.controller("myCtrl", function($scope, $http) {
+  $scope.header = "Hello World";
+  
+  $http.get('http://localhost:8080/assignment/messages?userId=' + "justme").
+  then(function(response) {
+      $scope.messages = response.data;
+      console.log($scope.messages);
+  });
+  
+  $scope.createMessage = function() {
+	  var data = {};
+	  data.userId = "justme";
+	  data.content = $scope.content;
+	  data.createdDate = new Date();
+	  
+	  $http.post("http://localhost:8080/assignment/messages", data).then(
+		  function successCallback(response) {
+		     console.log("Yes, message was submitted successfully");
+		  },
+		  function errorCallback(response) {
+		     console.log("No, message failed to submit");
+		  }
+	  );
+  };
+  
+});
+</script>
+
+</body>
+</html>
